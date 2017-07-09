@@ -5,15 +5,16 @@ port.onMessage.addListener(response => {
 });
 
 browser.pageAction.onClicked.addListener(tab => {
-  const type = browser.storage.local.get('url_saver_selected_type');
-  port.postMessage({ type: type, url: tab.url });
+  browser.storage.local.get('selectedType').then(storedItems => {
+    port.postMessage({ type: storedItems.selectedType, url: tab.url });
 
-  browser.pageAction.setIcon({
-    tabId: tab.id,
-    path: {
-      19: 'buttons/diskette-active-x19.png',
-      36: 'buttons/diskette-active-x36.png',
-    },
+    browser.pageAction.setIcon({
+      tabId: tab.id,
+      path: {
+        19: 'buttons/diskette-active-x19.png',
+        36: 'buttons/diskette-active-x36.png',
+      },
+    });
   });
 });
 

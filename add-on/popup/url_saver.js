@@ -11,9 +11,11 @@ browser.storage.local
 
     storedItems.types.forEach((type, i) => {
       const radioItem = typeElement.cloneNode(true);
-      const [input, label] = radioItem.children;
+      const input = radioItem.children[0];
+      const label = radioItem.children[1];
       label.textContent = type;
       input.id = `url_type_${i + 2}`;
+      label.htmlFor = input.id;
       input.value = type;
       input.checked = storedItems.selectedType === type;
       urlType.appendChild(radioItem);

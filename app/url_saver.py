@@ -33,15 +33,28 @@ def main():
     parser = configparser.ConfigParser()
     parser.read([os.path.join(os.path.dirname(sys.argv[0]), 'url_saver.ini'), os.path.expanduser('~/.config/url-saver/url_saver.ini')])
 
-    save_location = os.path.expanduser(parser.get('Main', 'save_location', fallback='~/Downloads/urls.txt'))
+    fallback = '~/Downloads/urls.txt'
+    open_files = {}
+    default_location = parser.get('Main', 'default_location', fallback=fallback)
 
-    with open(save_location, 'a') as f:
-        while True:
-            received_message = get_message()
-            if received_message is None:
-                break
-            print(received_message, file=f, flush=True)
-            send_message(encode_message('pong'))
+    while True:
+        received_message = get_message()
+        if received_message is None:
+            break
+        elif received_message == 'reload':
+            for file in open_files.values():
+                file.close()
+            main()
+            break
+        url_type = received_message.get('type', 'default')
+        if url_type not in open_files:
+            open_files[url_type] = open(os.path.expanduser(parser.get('Locations', url_type, fallback=default_location)), 'a')
+
+        print(received_message['url'], file=open_files[url_type], flush=True)
+        send_message(encode_message('pong'))
+
+    for file in open_files.values():
+        file.close()
 
 if __name__ == '__main__':
     main()
