@@ -5,6 +5,7 @@ import json
 import struct
 import configparser
 import os.path
+import platform
 
 def get_message():
     rawLength = sys.stdin.buffer.read(4)
@@ -31,10 +32,12 @@ def send_message(encodedMessage):
 
 def main():
     parser = configparser.ConfigParser()
-    parser.read([os.path.join(os.path.dirname(sys.argv[0]), 'url_saver.ini'), os.path.expanduser('~/.config/url-saver/url_saver.ini')])
+    user_config = '~/.config/url-saver/url_saver.ini'
+    if platform.system() == 'Windows':
+        user_config = os.path.expandvars('%APPDATA%/url-saver/url_saver.ini')
+    parser.read([os.path.join(os.path.dirname(sys.argv[0]), 'url_saver.ini'), os.path.expanduser(user_config)])
 
     fallback = '~/Downloads/urls.txt'
-    open_files = {}
     default_location = parser.get('Main', 'default_location', fallback=fallback)
 
     while True:
@@ -42,19 +45,15 @@ def main():
         if received_message is None:
             break
         elif received_message == 'reload':
-            for file in open_files.values():
-                file.close()
             main()
             break
+
         url_type = received_message.get('type', 'default')
-        if url_type not in open_files:
-            open_files[url_type] = open(os.path.expanduser(parser.get('Locations', url_type, fallback=default_location)), 'a')
 
-        print(received_message['url'], file=open_files[url_type], flush=True)
+        with open(os.path.expanduser(parser.get('Locations', url_type, fallback=default_location)), 'a') as f:
+            print(received_message['url'], file=f)
+
         send_message(encode_message('pong'))
-
-    for file in open_files.values():
-        file.close()
 
 if __name__ == '__main__':
     main()
