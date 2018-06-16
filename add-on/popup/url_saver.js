@@ -5,9 +5,8 @@ browser.storage.local
   })
   .then(storedItems => {
     const urlType = document.getElementById('url-type');
-    const typeElement = urlType.children[0];
-    typeElement.checked =
-      storedItems.selectedType === typeElement.children[0].value;
+    const typeElement = urlType.firstElementChild;
+    typeElement.firstElementChild.checked = storedItems.selectedType === typeElement.firstElementChild.value;
 
     storedItems.types.forEach((type, i) => {
       const radioItem = typeElement.cloneNode(true);
@@ -21,12 +20,11 @@ browser.storage.local
       urlType.appendChild(radioItem);
     });
 
-    document.getElementById('type-form').addEventListener('submit', () => {
-      const checkedType = urlType.querySelector(
-        'input[name="url_type"]:checked'
-      );
-      if (checkedType) {
-        browser.storage.local.set({ selectedType: checkedType.value });
-      }
+    urlType.querySelectorAll('.radioItem input').forEach(radio => {
+      radio.addEventListener('change', event => {
+        if (event.target.checked) {
+          browser.storage.local.set({ selectedType: event.target.value });
+        }
+      });
     });
   });

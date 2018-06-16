@@ -3,5 +3,5 @@
   "description": "Saves URL to specified file",
   "path": "C:\\Program Files\\url-saver\\url_saver.bat",
   "type": "stdio",
-  "allowed_extensions": ["chronotank@gmail.com"]
+  "allowed_extensions": ["url_saver@chronoes"]
 }

@@ -1,7 +1,7 @@
 # Maintainer: Marten Tarkin <martentarkin@gmail.com>
 pkgname=url-saver
-pkgver=1.1.0.0
-pkgrel=2
+pkgver=1.2.0.0
+pkgrel=1
 epoch=
 pkgdesc="Web Extension native app for saving URLs"
 arch=('any')
@@ -21,7 +21,7 @@ install=
 changelog=
 source=("$pkgname-$pkgver.tar.gz")
 noextract=()
-md5sums=('5d0ab02bb42efda61d87cf3bff5dfd61')
+md5sums=('be76a5140ee04d82f87eb037796ba62f')
 validpgpkeys=()
 
 package() {
