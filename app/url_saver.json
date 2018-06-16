@@ -3,5 +3,5 @@
   "description": "Saves URL to specified file",
   "path": "/usr/local/share/url-saver/url_saver.py",
   "type": "stdio",
-  "allowed_extensions": ["url_saver@chronoes"]
+  "allowed_extensions": ["chronotank@gmail.com"]
 }

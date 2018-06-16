@@ -1,6 +1,6 @@
 # Maintainer: Marten Tarkin <martentarkin@gmail.com>
 pkgname=url-saver
-pkgver=1.2.0.0
+pkgver=1.2.0.1
 pkgrel=1
 epoch=
 pkgdesc="Web Extension native app for saving URLs"
