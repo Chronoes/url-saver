@@ -1,11 +1,11 @@
 # Maintainer: Marten Tarkin <marten@tarkin.ee>
 pkgname=url-saver
-pkgver=1.2.0.2
+pkgver=1.3
 pkgrel=1
 epoch=
 pkgdesc="Web Extension native app for saving URLs"
 arch=('any')
-url=""
+url="https://github.com/Chronoes/url-saver"
 license=('MIT')
 groups=()
 depends=('python>=3.0')
@@ -21,7 +21,7 @@ install=
 changelog=
 source=("$pkgname-$pkgver.tar.gz")
 noextract=()
-md5sums=('766b78444c77e6145a4dc505fb1a358b')
+md5sums=('17ff6f2124f3a8809d1d48056ccc94c8')
 validpgpkeys=()
 
 package() {

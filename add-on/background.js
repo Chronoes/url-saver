@@ -1,5 +1,5 @@
 function addActiveTab(url) {
-  return browser.storage.local.get({ activeTabs: [] }).then(storedItems => {
+  return browser.storage.local.get({ activeTabs: [] }).then((storedItems) => {
     var activeTabs = storedItems.activeTabs;
     activeTabs.push(url);
     return browser.storage.local.set({
@@ -9,7 +9,7 @@ function addActiveTab(url) {
 }
 
 function removeActiveTab(url) {
-  return browser.storage.local.get({ activeTabs: [] }).then(storedItems => {
+  return browser.storage.local.get({ activeTabs: [] }).then((storedItems) => {
     var activeTabs = new Set(storedItems.activeTabs);
     if (activeTabs.has(url)) {
       activeTabs.delete(url);
@@ -49,7 +49,7 @@ browser.storage.local.remove('activeTabs');
 
 const port = browser.runtime.connectNative('url_saver');
 
-port.onMessage.addListener(response => {
+port.onMessage.addListener((response) => {
   console.debug('Received from url_saver:', response);
   if (response.action === 'check') {
     if (response.found) {
@@ -63,12 +63,12 @@ port.onMessage.addListener(response => {
   }
 });
 
-browser.pageAction.onClicked.addListener(tab => {
-  removeActiveTab(tab.url).then(exists => {
+browser.pageAction.onClicked.addListener((tab) => {
+  removeActiveTab(tab.url).then((exists) => {
     if (exists) {
       port.postMessage({ action: 'remove', url: tab.url, tabId: tab.id });
     } else {
-      browser.storage.local.get('selectedType').then(storedItems => {
+      browser.storage.local.get('selectedType').then((storedItems) => {
         port.postMessage({ action: 'add', type: storedItems.selectedType, url: tab.url });
         setButtonActive(tab.id);
         addActiveTab(tab.url);
@@ -80,7 +80,7 @@ browser.pageAction.onClicked.addListener(tab => {
 const allowedUrls = /gelbooru\.com.*id=[0-9]+.*/;
 
 browser.tabs.onUpdated.addListener((tabId, change, tab) => {
-  if (tab.status === 'loading' && tab.url && tab.url.match(allowedUrls)) {
+  if (change.status === 'complete' && tab.url && tab.url.match(allowedUrls)) {
     browser.pageAction.show(tabId);
     port.postMessage({ action: 'check', url: tab.url, tabId });
   }

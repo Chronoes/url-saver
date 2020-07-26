@@ -8,8 +8,11 @@ import os
 import os.path
 import shutil
 import platform
-import subprocess
+
+from urllib.parse import urlparse, parse_qs
 from tempfile import gettempdir
+
+class InvalidURLException(Exception): pass
 
 
 def get_message():
@@ -33,6 +36,20 @@ def send_message(encoded_message):
     sys.stdout.buffer.write(length)
     sys.stdout.buffer.write(content)
     sys.stdout.buffer.flush()
+
+
+def gelbooru_canonical_url(url):
+    parsed_url = urlparse(url)
+    qry = parse_qs(parsed_url.query)
+    if 'id' not in qry or len(qry['id']) == 0:
+        raise InvalidURLException('Missing id in query')
+    return 'https://gelbooru.com/index.php?page=post&s=view&id=' + qry['id'].pop()
+
+
+def get_canonical_url(url):
+    if url.find('gelbooru.com') != -1:
+        return gelbooru_canonical_url(url)
+    return url
 
 
 def find_match(url, paths):
@@ -81,16 +98,28 @@ def main():
             url_type = received_message.get('type', 'default')
 
             with open(parser.get('Locations', url_type, fallback=parser.get('Locations', 'default')), 'a') as f:
-                print(received_message['url'], file=f)
-        elif action == 'check':
-            found, _name_match = find_match(received_message['url'], parser.items('Locations'))
-            response['found'] = found
-            response['tabId'] = received_message['tabId']
-            response['url'] = received_message['url']
-        elif action == 'remove':
-            response['success'] = False
-            found, name_match = find_match(received_message['url'], parser.items('Locations'))
+                try:
+                    print(get_canonical_url(received_message['url']), file=f)
+                except InvalidURLException:
+                    pass
 
+        elif action == 'check':
+            try:
+                url = get_canonical_url(received_message['url'])
+                found, _name_match = find_match(url, parser.items('Locations'))
+                response['found'] = found
+            except InvalidURLException:
+                response['found'] = False
+            response['tabId'] = received_message['tabId']
+            response['url'] = url
+        elif action == 'remove':
+            try:
+                url = get_canonical_url(received_message['url'])
+                found, name_match = find_match(url, parser.items('Locations'))
+            except InvalidURLException:
+                found = False
+
+            response['success'] = False
             if found:
                 path = parser.get('Locations', name_match)
                 temp_path = os.path.join(gettempdir(), 'url-saver', name_match)
@@ -101,7 +130,7 @@ def main():
                 temp_filepath = os.path.join(temp_path, os.path.basename(path))
                 with open(path) as f, open(temp_filepath, 'w') as temp_file:
                     for line in f:
-                        if line.strip() != received_message['url']:
+                        if line.strip() != url:
                             temp_file.write(line)
 
                 os.remove(path)
@@ -110,7 +139,7 @@ def main():
                 response['success'] = True
 
             response['tabId'] = received_message['tabId']
-            response['url'] = received_message['url']
+            response['url'] = url
 
         send_message(encode_message(response))
 
