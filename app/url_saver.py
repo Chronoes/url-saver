@@ -53,19 +53,13 @@ def get_canonical_url(url):
 
 
 def find_match(url, paths):
-    found = False
-    name_match = None
     for name, path in paths:
         with open(path) as f:
-            for line in f:
+            for nr, line in enumerate(f):
                 if line.strip() == url:
-                    found = True
-                    name_match = name
-                    break
-        if found:
-            break
+                    return (True, name, nr)
 
-    return (found, name_match)
+    return (False, None, -1)
 
 
 def main():
@@ -106,8 +100,7 @@ def main():
         elif action == 'check':
             try:
                 url = get_canonical_url(received_message['url'])
-                found, _name_match = find_match(url, parser.items('Locations'))
-                response['found'] = found
+                response['found'] = find_match(url, parser.items('Locations'))[0]
             except InvalidURLException:
                 response['found'] = False
             response['tabId'] = received_message['tabId']
@@ -115,26 +108,19 @@ def main():
         elif action == 'remove':
             try:
                 url = get_canonical_url(received_message['url'])
-                found, name_match = find_match(url, parser.items('Locations'))
+                found, name_match, line_nr = find_match(url, parser.items('Locations'))
             except InvalidURLException:
                 found = False
 
             response['success'] = False
             if found:
                 path = parser.get('Locations', name_match)
-                temp_path = os.path.join(gettempdir(), 'url-saver', name_match)
-
-                if not os.path.isdir(temp_path):
-                    os.makedirs(temp_path)
-
-                temp_filepath = os.path.join(temp_path, os.path.basename(path))
-                with open(path) as f, open(temp_filepath, 'w') as temp_file:
-                    for line in f:
-                        if line.strip() != url:
-                            temp_file.write(line)
-
-                os.remove(path)
-                shutil.move(temp_filepath, path)
+                with open(path, 'r+') as f:
+                    lines = f.readlines()
+                    lines.pop(line_nr)
+                    f.seek(0)
+                    f.truncate()
+                    f.writelines(lines)
 
                 response['success'] = True
 
