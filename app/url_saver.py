@@ -104,7 +104,7 @@ def main():
             except InvalidURLException:
                 response['found'] = False
             response['tabId'] = received_message['tabId']
-            response['url'] = url
+            response['url'] = received_message['url']
         elif action == 'remove':
             try:
                 url = get_canonical_url(received_message['url'])
@@ -125,7 +125,7 @@ def main():
                 response['success'] = True
 
             response['tabId'] = received_message['tabId']
-            response['url'] = url
+            response['url'] = received_message['url']
 
         send_message(encode_message(response))
 

@@ -1,9 +1,9 @@
 function addActiveTab(url) {
   return browser.storage.local.get({ activeTabs: [] }).then((storedItems) => {
-    var activeTabs = storedItems.activeTabs;
-    activeTabs.push(url);
+    const activeTabs = new Set(storedItems.activeTabs);
+    activeTabs.add(url);
     return browser.storage.local.set({
-      activeTabs: activeTabs,
+      activeTabs: Array.from(activeTabs),
     });
   });
 }
@@ -11,8 +11,7 @@ function addActiveTab(url) {
 function removeActiveTab(url) {
   return browser.storage.local.get({ activeTabs: [] }).then((storedItems) => {
     var activeTabs = new Set(storedItems.activeTabs);
-    if (activeTabs.has(url)) {
-      activeTabs.delete(url);
+    if (activeTabs.delete(url)) {
       return browser.storage.local
         .set({
           activeTabs: Array.from(activeTabs),
@@ -80,7 +79,7 @@ browser.pageAction.onClicked.addListener((tab) => {
 const allowedUrls = /gelbooru\.com.*id=[0-9]+.*/;
 
 browser.tabs.onUpdated.addListener((tabId, change, tab) => {
-  if (change.status === 'complete' && tab.url && tab.url.match(allowedUrls)) {
+  if (change.status === 'complete' && tab.url && allowedUrls.test(tab.url)) {
     browser.pageAction.show(tabId);
     port.postMessage({ action: 'check', url: tab.url, tabId });
   }

@@ -1,9 +1,9 @@
 # Maintainer: Marten Tarkin <marten@tarkin.ee>
 pkgname=url-saver
-pkgver=1.4
+pkgver=1.5
 pkgrel=1
 epoch=
-pkgdesc="Web Extension native app for saving URLs"
+pkgdesc="WebExtension native app for saving URLs"
 arch=('any')
 url="https://github.com/Chronoes/url-saver"
 license=('MIT')
@@ -11,7 +11,7 @@ groups=()
 depends=('python>=3.0')
 makedepends=()
 checkdepends=()
-optdepends=()
+optdepends=('firefox: uses this WebExtension native app')
 provides=()
 conflicts=()
 replaces=()
@@ -21,7 +21,7 @@ install=
 changelog=
 source=("$pkgname-$pkgver.tar.gz")
 noextract=()
-md5sums=('17165a5db58fa7762e95e366253aa3a9')
+md5sums=('47d0e6873e5d18e789f4787566c60e39')
 validpgpkeys=()
 
 package() {
