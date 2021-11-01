@@ -6,11 +6,12 @@ import struct
 import configparser
 import os
 import os.path
-import shutil
 import platform
 
 from urllib.parse import urlparse, parse_qs
-from tempfile import gettempdir
+
+version_info = (1, 6)
+version = '.'.join(map(str, version_info))
 
 class InvalidURLException(Exception): pass
 
@@ -62,6 +63,17 @@ def find_match(url, paths):
     return (False, None, -1)
 
 
+def has_active_series(path):
+    stack = []
+    with open(path) as f:
+        for line in f:
+            if line.startswith('series'):
+                stack.append('series')
+            elif line.startswith('end series'):
+                if stack and stack[-1] == 'series':
+                    stack.pop()
+    return stack and stack[-1] == 'series'
+
 def main():
     parser = configparser.ConfigParser()
     user_config = '~/.config/url-saver/url_saver.ini'
@@ -70,13 +82,19 @@ def main():
     parser.read([os.path.join(os.path.dirname(sys.argv[0]), 'url_saver.ini'), os.path.expanduser(user_config)])
 
     # Expand config paths and create empty files
+    location_keys = []
     for key, value in parser.items('Locations'):
         path = os.path.expanduser(value)
         parser.set('Locations', key, path)
         if not os.path.isfile(path):
             open(path, 'w').close()
+        if key != 'default':
+            location_keys.append(key)
 
     print('Starting up url_saver', file=sys.stderr)
+
+    get_location_path = lambda url_type: parser.get('Locations', url_type, fallback=parser.get('Locations', 'default'))
+    send_message(encode_message({'action': 'startup', 'version': version, 'types': location_keys}))
     while True:
         received_message = get_message()
         if received_message is None:
@@ -86,21 +104,40 @@ def main():
             break
 
         action = received_message.get('action', 'add')
-        response = {'action': action}
+        response = {'action': action, 'version': version}
+
 
         if action == 'add':
             url_type = received_message.get('type', 'default')
+            response['type'] = url_type
+            location_path = get_location_path(url_type)
 
-            with open(parser.get('Locations', url_type, fallback=parser.get('Locations', 'default')), 'a') as f:
+            is_series = received_message.get('series', False)
+            response['series'] = is_series
+            is_active_series = has_active_series(location_path)
+            response['activeSeries'] = is_active_series
+
+            with open(location_path, 'a') as f:
+                # If there's an active series but this URL is not part of a series
+                if is_active_series:
+                    if not is_series:
+                        print('end series', file=f)
+                elif is_series:
+                    print('series', file=f)
+
                 try:
-                    print(get_canonical_url(received_message['url']), file=f)
+                    url = get_canonical_url(received_message['url'])
+                    print(url, file=f)
+                    response['url'] = url
                 except InvalidURLException:
-                    pass
+                    response['invalid'] = True
 
         elif action == 'check':
             try:
                 url = get_canonical_url(received_message['url'])
-                response['found'] = find_match(url, parser.items('Locations'))[0]
+                found, name, _ = find_match(url, parser.items('Locations'))
+                response['found'] = found
+                response['type'] = name
             except InvalidURLException:
                 response['found'] = False
             response['tabId'] = received_message['tabId']
@@ -111,9 +148,11 @@ def main():
                 found, name_match, line_nr = find_match(url, parser.items('Locations'))
             except InvalidURLException:
                 found = False
+                response['invalid'] = True
 
             response['success'] = False
             if found:
+                response['type'] = name_match
                 path = parser.get('Locations', name_match)
                 with open(path, 'r+') as f:
                     lines = f.readlines()
@@ -126,6 +165,15 @@ def main():
 
             response['tabId'] = received_message['tabId']
             response['url'] = received_message['url']
+        elif action in ('series', 'end series'):
+            url_type = received_message.get('type', 'default')
+            response['type'] = url_type
+            location_path = get_location_path(url_type)
+            is_active_series = has_active_series(location_path)
+
+            with open(location_path, 'a') as f:
+                if (action == 'series' and not is_active_series) or (action == 'end series' and is_active_series):
+                    print(action, file=f)
 
         send_message(encode_message(response))
 

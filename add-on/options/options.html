@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>URL Saver Options</title>
     <style media="screen">
       html {
         font-family: sans-serif;
+      }
+      input {
+        padding: 0.25rem;
+      }
+      button {
+        padding: 0.25rem 1rem;
+      }
+      .type-col {
+        max-width: 200px;
+      }
+      .del-col {
+        max-width: 30px;
       }
     </style>
   </head>
@@ -17,8 +29,8 @@
     <table id="types">
       <thead>
         <tr>
-          <th style="width: 200px;">Type</th>
-          <th style="width: 30px;">Delete</th>
+          <th class="type-col">Type</th>
+          <th class="del-col">Delete</th>
         </tr>
       </thead>
       <tbody></tbody>

@@ -1,9 +1,12 @@
+const seriesToggle = document.getElementById('series-toggle');
+
 browser.storage.local
   .get({
     types: [],
     selectedType: 'default',
+    seriesToggled: false,
   })
-  .then(storedItems => {
+  .then((storedItems) => {
     const urlType = document.getElementById('url-type');
     const typeElement = urlType.firstElementChild;
     typeElement.firstElementChild.checked = storedItems.selectedType === typeElement.firstElementChild.value;
@@ -20,11 +23,22 @@ browser.storage.local
       urlType.appendChild(radioItem);
     });
 
-    urlType.querySelectorAll('.radioItem input').forEach(radio => {
-      radio.addEventListener('change', event => {
+    urlType.querySelectorAll('.radioItem input').forEach((radio) => {
+      radio.addEventListener('change', (event) => {
         if (event.target.checked) {
           browser.storage.local.set({ selectedType: event.target.value });
         }
       });
     });
+
+    seriesToggle.checked = storedItems.seriesToggled;
   });
+
+seriesToggle.addEventListener('click', (event) => {
+  const { checked } = event.target;
+  browser.storage.local.set({ seriesToggled: checked }).then(() => {
+    if (!checked) {
+      browser.runtime.sendMessage('end series');
+    }
+  });
+});

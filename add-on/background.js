@@ -59,6 +59,8 @@ port.onMessage.addListener((response) => {
     if (response.success) {
       setButtonInactive(response.tabId);
     }
+  } else if (response.action === 'startup') {
+    browser.storage.local.set({ types: response.types });
   }
 });
 
@@ -67,8 +69,13 @@ browser.pageAction.onClicked.addListener((tab) => {
     if (exists) {
       port.postMessage({ action: 'remove', url: tab.url, tabId: tab.id });
     } else {
-      browser.storage.local.get('selectedType').then((storedItems) => {
-        port.postMessage({ action: 'add', type: storedItems.selectedType, url: tab.url });
+      browser.storage.local.get(['selectedType', 'seriesToggled']).then((storedItems) => {
+        port.postMessage({
+          action: 'add',
+          type: storedItems.selectedType,
+          url: tab.url,
+          series: storedItems.seriesToggled,
+        });
         setButtonActive(tab.id);
         addActiveTab(tab.url);
       });
@@ -83,4 +90,12 @@ browser.tabs.onUpdated.addListener((tabId, change, tab) => {
     browser.pageAction.show(tabId);
     port.postMessage({ action: 'check', url: tab.url, tabId });
   }
+});
+
+browser.runtime.onMessage.addListener((data, sender) => {
+  browser.storage.local.get('selectedType').then((storedItems) => {
+    if (data === 'end series') {
+      port.postMessage({ action: 'end series', type: storedItems.selectedType });
+    }
+  });
 });

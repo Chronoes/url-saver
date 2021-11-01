@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>URL saver</title>
   </head>
   <style media="screen">
@@ -19,17 +19,18 @@
   </style>
   <body>
     <div class="container">
-        <fieldset class="url-type">
-          <legend>
-            URL type
-          </legend>
-          <div id="url-type">
-            <div class="radioItem">
-              <input type="radio" name="url_type" id="url_type_1" value="default" />
-              <label for="url_type_1" style="text-transform: capitalize;">Default</label>
-            </div>
+      <fieldset class="url-type">
+        <legend>URL type</legend>
+        <div id="url-type">
+          <div class="radioItem">
+            <input type="radio" name="url_type" id="url_type_1" value="default" />
+            <label for="url_type_1" style="text-transform: capitalize">Default</label>
           </div>
-        </fieldset>
+        </div>
+        <hr />
+        <input type="checkbox" name="series_toggle" id="series-toggle" />
+        <label for="series-toggle">Add to series?</label>
+      </fieldset>
     </div>
     <script src="url_saver.js" charset="utf-8"></script>
   </body>
