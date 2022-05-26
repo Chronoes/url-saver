@@ -127,7 +127,7 @@ class ActionHandler:
                 print('end series', file=f)
 
     def _get_viewed_item(self, cursor: sqlite3.Cursor, item: dict) -> Optional[sqlite3.Row]:
-        cursor.execute('SELECT * FROM viewed WHERE source = ? AND id = ?', (item['source'], item['id']))
+        cursor.execute('SELECT source, id, page FROM viewed WHERE source = ? AND id = ?', (item['source'], item['id']))
         return cursor.fetchone()
 
     def view(self, received_message: dict, response: dict) -> dict:
@@ -137,7 +137,7 @@ class ActionHandler:
             db_item = self._get_viewed_item(cursor, item)
             if db_item:
                 response['exists'] = True
-                if db_item['page'] < item['page']:
+                if db_item[2] < item['page']:
                     cursor.execute('UPDATE viewed SET date_modified = ?, page = ? WHERE source = ? AND id = ?',
                         (now_dt, item['page'], item['source'], item['id'])
                     )

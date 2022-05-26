@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "URL saver",
-  "version": "1.8",
+  "version": "2.0",
   "description": "Saves URL to specified file",
   "browser_specific_settings": {
     "gecko": {
@@ -9,34 +9,19 @@
       "strict_min_version": "90.0"
     }
   },
-  "browser_action": {
-    "browser_style": true,
-    "default_icon": {
-      "19": "buttons/diskette-x19.png",
-      "36": "buttons/diskette-x36.png"
-    },
-    "default_title": "URL save select",
-    "default_popup": "popup/popup.html"
-  },
-  "page_action": {
-    "browser_style": true,
-    "default_icon": {
-      "19": "buttons/diskette-x19.png",
-      "36": "buttons/diskette-x36.png"
-    },
-    "default_title": "URL save"
-  },
   "options_ui": {
     "browser_style": true,
     "page": "options/options.html"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://gelbooru.com/*"],
-      "js": ["gelbooru.js"]
+      "js": ["gelbooru.js"],
+      "css": ["gelbooru.css"]
     }
   ],
   "permissions": ["nativeMessaging", "tabs", "storage"]

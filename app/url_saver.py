@@ -10,7 +10,7 @@ import platform
 
 from action_handler import ActionHandler
 
-version_info = (1, 8)
+version_info = (2, 0)
 version = '.'.join(map(str, version_info))
 
 
