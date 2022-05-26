@@ -1,0 +1,29 @@
+#url-saver-container-v3w5am90u8 {
+    display: flex;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    gap: 0.5rem;
+}
+#url-saver-container-v3w5am90u8 label {
+    margin-left: 0.15rem;
+}
+#url-saver-container-v3w5am90u8 fieldset {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.25rem;
+}
+#url-types-v3w5am90u8 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+#url-types-v3w5am90u8 label {
+    text-transform: capitalize;
+}
+#save-button-v3w5am90u8 {
+    padding: 0.25rem 0.75rem;
+    margin-top: 0.25rem;
+    width: 100%;
+}
+.btn-remove-v3w5am90u8 {
+    background-color: #f4dc13;
+}
