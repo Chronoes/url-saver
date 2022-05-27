@@ -128,10 +128,10 @@ function createButtons(seriesToggled) {
 }
 
 async function addViewControls() {
-  const imgContainer = document.querySelector('.image-container');
+  const referenceElement = document.getElementById('tag-list');
   const controlsContainer = document.createElement('div');
   controlsContainer.id = 'url-saver-container-v3w5am90u8';
-  imgContainer.parentElement.insertAdjacentElement('afterbegin', controlsContainer);
+  referenceElement.parentElement.insertAdjacentElement('afterbegin', controlsContainer);
 
   const urlTypesFieldset = document.createElement('fieldset');
   controlsContainer.appendChild(urlTypesFieldset);
