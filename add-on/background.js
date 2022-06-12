@@ -36,11 +36,12 @@ browser.runtime.onMessage.addListener((data, sender) => {
     data.tabId = sender.tab.id;
     port.postMessage(data);
     activeTabs.add(data.tabId);
+    console.log(activeTabs);
   }
 });
 
 browser.storage.onChanged.addListener((changes, areaName) => {
-  activeTabs.forEach((tab) => {
-    if (tab.id) browser.tabs.sendMessage(tab.id, { action: 'storage change', changes, areaName });
+  activeTabs.forEach((tabId) => {
+    if (tabId) browser.tabs.sendMessage(tabId, { action: 'storage change', changes, areaName });
   });
 });
