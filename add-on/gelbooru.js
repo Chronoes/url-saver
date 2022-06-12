@@ -166,11 +166,11 @@ function addViewPageListeners() {
       const btn = document.getElementById(saveButtonId);
       btn.textContent = saveButtonText(storedItems.seriesToggled);
       btn.classList.remove('btn-remove-v3w5am90u8');
-    }
-  });
-
-  browser.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === 'local') {
+    } else if (data.action === 'storage change') {
+      const { changes, areaName } = data;
+      if (areaName !== 'local') {
+        return;
+      }
       if (changes.selectedType) {
         const typeEl = document.getElementById(`${urlTypesId}-${changes.selectedType.newValue}`);
         if (typeEl) {

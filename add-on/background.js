@@ -24,10 +24,23 @@ function getNativePort() {
 
 getNativePort();
 
+const activeTabs = new Set();
+
+browser.tabs.onRemoved.addListener((tabId) => {
+  activeTabs.delete(tabId);
+});
+
 browser.runtime.onMessage.addListener((data, sender) => {
   if (data.action) {
     const port = getNativePort();
     data.tabId = sender.tab.id;
     port.postMessage(data);
+    activeTabs.add(data.tabId);
   }
+});
+
+browser.storage.onChanged.addListener((changes, areaName) => {
+  activeTabs.forEach((tab) => {
+    if (tab.id) browser.tabs.sendMessage(tab.id, { action: 'storage change', changes, areaName });
+  });
 });
