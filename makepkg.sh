@@ -4,8 +4,12 @@
 source ./PKGBUILD
 tar -cvzf "$pkgname-$pkgver.tar.gz" app
 # Get md5 of resulting file
-md5=`md5sum "$pkgname-$pkgver.tar.gz" | cut -d ' ' -f 1`
-sed -i "s/md5sums=\(.*\)/md5sums=('$md5')/" ./PKGBUILD
+
+# checksum of package
+checksum=`makepkg -g`
+
+perl -0777 -i -pe "s/md5sums=\([a-z0-9'\n]+?\)/$checksum/igs" ./PKGBUILD
+# sed -i "s/md5sums=\(.*\)/$checksum/" ./PKGBUILD
 
 # Create Arch package
 makepkg -cf
