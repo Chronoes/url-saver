@@ -22,6 +22,11 @@
       "matches": ["https://gelbooru.com/*"],
       "js": ["gelbooru.js"],
       "css": ["gelbooru.css"]
+    },
+    {
+      "matches": ["https://exhentai.org/*"],
+      "js": ["exhentai.js"],
+      "css": ["gelbooru.css"]
     }
   ],
   "permissions": ["nativeMessaging", "tabs", "storage"]

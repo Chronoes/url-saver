@@ -20,7 +20,7 @@ function addOutlinesToThumbnails() {
     });
 
     const ids = [];
-    document.querySelectorAll('.thumbnail-preview a').forEach((el) => {
+    thumbnailItems.forEach((el) => {
       ids.push(el.id);
       el.addEventListener('mousedown', onClickEvent);
     });
