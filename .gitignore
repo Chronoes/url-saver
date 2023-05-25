@@ -1,3 +1,7 @@
 __pycache__
 web-ext-artifacts/
 /url-saver*.tar*
+
+# NPM and builds
+/node_modules
+/build

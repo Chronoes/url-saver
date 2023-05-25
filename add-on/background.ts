@@ -1,5 +1,7 @@
+import { Action, isAction, isPayload } from './types';
+
 let nativeConnected = true;
-let nativePort;
+let nativePort: browser.runtime.Port;
 
 function getNativePort() {
   if (nativePort && nativeConnected) {
@@ -9,12 +11,15 @@ function getNativePort() {
   nativePort.onDisconnect.addListener(() => {
     nativeConnected = false;
   });
-  nativePort.onMessage.addListener((response) => {
-    console.debug('Received from url_saver:', response);
-    if (response.action === 'startup') {
+  nativePort.onMessage.addListener(async (response) => {
+    const storedItems = await browser.storage.local.get('debug');
+    if (storedItems.debug) {
+      console.debug('Received from url_saver:', response);
+    }
+    if (isAction(response, Action.Startup)) {
       browser.storage.local.set({ types: response.types });
     }
-    if (typeof response.tabId !== 'undefined') {
+    if (isPayload(response) && response.tabId) {
       browser.tabs.sendMessage(response.tabId, response);
     }
   });
@@ -36,7 +41,6 @@ browser.runtime.onMessage.addListener((data, sender) => {
     data.tabId = sender.tab.id;
     port.postMessage(data);
     activeTabs.add(data.tabId);
-    console.log(activeTabs);
   }
 });
 

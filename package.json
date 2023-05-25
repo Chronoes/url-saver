@@ -1,0 +1,22 @@
+{
+  "name": "url-saver",
+  "version": "2.3.0",
+  "description": "Saves URLs with a custom interface",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chronoes/url-saver.git"
+  },
+  "author": "Chronoes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Chronoes/url-saver/issues"
+  },
+  "homepage": "https://github.com/Chronoes/url-saver#readme",
+  "devDependencies": {
+    "@types/firefox-webext-browser": "^111.0.1",
+    "typescript": "^5.0.4"
+  }
+}

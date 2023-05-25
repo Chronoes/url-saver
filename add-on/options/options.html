@@ -23,18 +23,10 @@
   </head>
   <body>
     <form id="add-type" method="post">
-      <input type="text" name="type" placeholder="Add type" />
+      <input type="checkbox" name="debug" id="debug-check" />
+      <label for="type">Enable debug</label>
       <button type="submit" name="submit">Add</button>
     </form>
-    <table id="types">
-      <thead>
-        <tr>
-          <th class="type-col">Type</th>
-          <th class="del-col">Delete</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
     <script src="options.js" charset="utf-8"></script>
   </body>
 </html>
