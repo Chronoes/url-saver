@@ -133,18 +133,19 @@ class ActionHandler:
     def view(self, received_message: dict, response: dict) -> dict:
         item = received_message['item']
         now_dt = datetime.datetime.now()
+        now_dt.microsecond = 0
         with self.db as cursor:
             db_item = self._get_viewed_item(cursor, item)
             if db_item:
                 response['exists'] = True
                 if db_item[2] < item['page']:
                     cursor.execute('UPDATE viewed SET date_modified = ?, page = ? WHERE source = ? AND id = ?',
-                        (now_dt, item['page'], item['source'], item['id'])
+                        (now_dt.isoformat(), item['page'], item['source'], item['id'])
                     )
             else:
                 response['exists'] = False
                 cursor.execute('INSERT INTO viewed(source, id, page, date_created, date_modified) VALUES (?,?,?,?,?)',
-                    (item['source'], item['id'], item['page'], now_dt, now_dt)
+                    (item['source'], item['id'], item['page'], now_dt.isoformat(), now_dt.isoformat())
                 )
 
         response['item'] = item

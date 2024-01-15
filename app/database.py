@@ -1,6 +1,7 @@
 import sqlite3
 import sys
 
+
 class ImageViewedDb:
     def __init__(self, filepath: str) -> None:
         self.filepath = filepath
@@ -9,15 +10,18 @@ class ImageViewedDb:
 
     def init_schema(self):
         with self as cursor:
-            cursor.execute("""
+            cursor.execute(
+                """
             CREATE TABLE IF NOT EXISTS viewed(
                 source text NOT NULL,
                 id text NOT NULL,
                 page int,
-                date_created text,
-                date_modified text,
-                UNIQUE(source, id)
-            )""")
+                updated_at text NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (source, id)
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS viewed_source_id_index ON viewed(source, id);
+            """
+            )
 
     def __enter__(self):
         self.conn = sqlite3.connect(self.filepath)
@@ -31,7 +35,7 @@ class ImageViewedDb:
         self.conn.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     db = ImageViewedDb(sys.argv[1])
     db.init_schema()
-    print('Schema initialized')
+    print("Schema initialized")
